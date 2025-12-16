@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    kotlin("plugin.serialization") version "1.9.22"
 }
 
 android {
@@ -34,6 +35,21 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    
+    // Retrofit - 网络请求框架
+    implementation(libs.retrofit)
+    
+    // OkHttp - HTTP 客户端
+    implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
+    
+    // Kotlin Serialization - JSON 解析
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.retrofit2.kotlinx.serialization.converter)
+    
+    // Kotlin Coroutines - 协程支持
+    implementation(libs.kotlinx.coroutines.android)
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
