@@ -2,8 +2,8 @@ package com.pusu.indexed.jikan
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.pusu.indexed.jikan.api.*
+import com.pusu.indexed.jikan.network.JikanJson
 import com.pusu.indexed.jikan.network.ResultCallAdapterFactory
-import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -54,16 +54,6 @@ object JikanApiClient {
     }
     
     /**
-     * Kotlin Serialization JSON 配置
-     * 配置为忽略未知字段，并使用宽松模式
-     */
-    private val json = Json {
-        ignoreUnknownKeys = true
-        isLenient = true
-        coerceInputValues = true
-    }
-    
-    /**
      * Retrofit 实例
      * 使用 Kotlin Serialization 作为 JSON 转换器
      * 使用 ResultCallAdapterFactory 支持 Kotlin Result
@@ -73,7 +63,7 @@ object JikanApiClient {
             .baseUrl(BASE_URL)
             .client(okHttpClient)
             .addCallAdapterFactory(ResultCallAdapterFactory())
-            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .addConverterFactory(JikanJson.json.asConverterFactory("application/json".toMediaType()))
             .build()
     }
     

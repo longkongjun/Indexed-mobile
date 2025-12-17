@@ -1,5 +1,6 @@
 package com.pusu.indexed.jikan.network
 
+import com.pusu.indexed.jikan.models.common.JikanErrorResponse
 import okhttp3.Request
 import okio.Timeout
 import retrofit2.Call
@@ -7,6 +8,7 @@ import retrofit2.CallAdapter
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
+import kotlinx.serialization.decodeFromString
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
@@ -80,11 +82,18 @@ class ResultCallAdapterFactory : CallAdapter.Factory() {
                             Result.failure(NullPointerException("响应体为空"))
                         }
                     } else {
+                        val errorBodyString = response.errorBody()?.string()
+                        val errorResponse = errorBodyString
+                            ?.takeIf { it.isNotBlank() }
+                            ?.let { raw ->
+                                runCatching { JikanJson.json.decodeFromString<JikanErrorResponse>(raw) }.getOrNull()
+                            }
                         Result.failure(
                             HttpException(
                                 code = response.code(),
                                 message = response.message(),
-                                errorBody = response.errorBody()?.string()
+                                errorBody = errorBodyString,
+                                errorResponse = errorResponse,
                             )
                         )
                     }
@@ -109,11 +118,18 @@ class ResultCallAdapterFactory : CallAdapter.Factory() {
                         Result.failure(NullPointerException("响应体为空"))
                     }
                 } else {
+                    val errorBodyString = response.errorBody()?.string()
+                    val errorResponse = errorBodyString
+                        ?.takeIf { it.isNotBlank() }
+                        ?.let { raw ->
+                            runCatching { JikanJson.json.decodeFromString<JikanErrorResponse>(raw) }.getOrNull()
+                        }
                     Result.failure(
                         HttpException(
                             code = response.code(),
                             message = response.message(),
-                            errorBody = response.errorBody()?.string()
+                            errorBody = errorBodyString,
+                            errorResponse = errorResponse,
                         )
                     )
                 }
@@ -148,11 +164,12 @@ class ResultCallAdapterFactory : CallAdapter.Factory() {
 data class HttpException(
     val code: Int,
     override val message: String,
-    val errorBody: String?
+    val errorBody: String?,
+    val errorResponse: JikanErrorResponse? = null,
 ) : Exception(message) {
     
     override fun toString(): String {
-        return "HttpException(code=$code, message='$message', errorBody='$errorBody')"
+        return "HttpException(code=$code, message='$message', errorBody='$errorBody', errorResponse=$errorResponse)"
     }
 }
 

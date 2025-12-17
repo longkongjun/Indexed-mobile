@@ -1,6 +1,5 @@
 package com.pusu.indexed.jikan.network
 
-import retrofit2.HttpException
 import java.io.IOException
 
 /**
@@ -62,6 +61,11 @@ inline fun <T> Result<T>.onNetworkError(action: (IOException) -> Unit): Result<T
     }
     return this
 }
+
+/**
+ * 读取服务端返回的结构化错误响应（若存在且可解析）
+ */
+fun HttpException.errorResponseOrNull() = errorResponse
 
 /**
  * 扁平化嵌套的 Result
