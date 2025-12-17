@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Coooomics"
 include(":app")
-include(":jikan")
+include(":repos:jikan")
+include(":models:Feed")
