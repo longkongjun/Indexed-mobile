@@ -1,8 +1,0 @@
-{
-  "buildPath": ":",
-  "projectPath": ":shared:data:jikan",
-  "moduleId": {
-    "groupId": "Coooomics.shared.data",
-    "moduleId": "jikan"
-  }
-}

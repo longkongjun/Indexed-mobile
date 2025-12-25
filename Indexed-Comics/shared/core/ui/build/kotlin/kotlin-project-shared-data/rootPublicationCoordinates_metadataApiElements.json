@@ -1,8 +1,0 @@
-{
-  "buildPath": ":",
-  "projectPath": ":shared:core:ui",
-  "moduleId": {
-    "groupId": "Coooomics.shared.core",
-    "moduleId": "ui"
-  }
-}

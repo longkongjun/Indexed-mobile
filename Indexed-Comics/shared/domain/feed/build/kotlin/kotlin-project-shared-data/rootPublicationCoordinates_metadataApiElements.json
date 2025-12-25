@@ -1,8 +1,0 @@
-{
-  "buildPath": ":",
-  "projectPath": ":shared:domain:feed",
-  "moduleId": {
-    "groupId": "Coooomics.shared.domain",
-    "moduleId": "feed"
-  }
-}

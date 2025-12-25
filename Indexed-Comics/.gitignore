@@ -24,3 +24,6 @@ local.properties
 .kapt/
 /.kotlin
 /.kotlin/
+**/build/
+**/.gradle/
+**/.kotlin/
