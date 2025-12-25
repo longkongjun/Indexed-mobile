@@ -1,29 +1,32 @@
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-/.idea
 .DS_Store
+Thumbs.db
+
+# IDE / tool configs
+/.idea
+.vscode/
+
+# Gradle / build outputs
 /build
-/captures
+**/build/
+.gradle
+**/.gradle/
+
+# Android/Native toolchain
+/.cxx
 .externalNativeBuild
-.cxx
 local.properties
-.kotlintest
-.kotlincache
-.kover
-.ksp/
+/local.properties
+
+# Kotlin/Compose caches
+/.kotlin
+/.kotlin/
+**/.kotlin/
 .kotlincache/
+.kotlintest
 .kover/
 .ksp/
 .kapt/
-/.kotlin
-/.kotlin/
-**/build/
-**/.gradle/
-**/.kotlin/
+
+# KMM Native dependencies
+.konan/
