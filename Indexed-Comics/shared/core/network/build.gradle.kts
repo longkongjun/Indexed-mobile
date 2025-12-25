@@ -27,14 +27,12 @@ kotlin {
         val desktopMain by getting { dependencies { implementation(libs.ktor.client.okhttp) } }
 
         val iosMain by creating {
+            dependsOn(commonMain)
             dependencies { implementation(libs.ktor.client.darwin) }
         }
-        val iosArm64Main by getting
-        val iosX64Main by getting
-        val iosSimulatorArm64Main by getting
-        iosArm64Main.dependsOn(iosMain)
-        iosX64Main.dependsOn(iosMain)
-        iosSimulatorArm64Main.dependsOn(iosMain)
+        val iosArm64Main by getting { dependsOn(iosMain) }
+        val iosX64Main by getting { dependsOn(iosMain) }
+        val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
 
         val jsMain by getting { dependencies { implementation(libs.ktor.client.js) } }
     }

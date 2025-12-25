@@ -30,3 +30,6 @@ local.properties
 
 # KMM Native dependencies
 .konan/
+
+# Kotlin/JS store (Yarn cache and lock files)
+kotlin-js-store/
