@@ -1,0 +1,12 @@
+abi_version=2.2.0
+builtins_platform=JS
+compiler_version=2.2.21
+depends=kotlin Coooomics.shared.core\:model Coooomics.shared.core\:ui Coooomics.shared.domain\:feed Coooomics.shared.data\:jikan org.jetbrains.compose.material3\:material3 org.jetbrains.compose.material\:material-ripple org.jetbrains.compose.foundation\:foundation org.jetbrains.compose.animation\:animation org.jetbrains.compose.material\:material-icons-core org.jetbrains.compose.foundation\:foundation-layout org.jetbrains.compose.ui\:ui org.jetbrains.compose.runtime\:runtime-saveable org.jetbrains.compose.runtime\:runtime org.jetbrains.compose.html\:html-core org.jetbrains.compose.ui\:ui-text org.jetbrains.compose.ui\:ui-graphics org.jetbrains.skiko\:skiko org.jetbrains.compose.html\:internal-html-core-runtime org.jetbrains.compose.animation\:animation-core org.jetbrains.compose.ui\:ui-unit org.jetbrains.compose.ui\:ui-geometry org.jetbrains.compose.ui\:ui-util org.jetbrains.kotlinx\:kotlinx-coroutines-core org.jetbrains.kotlinx\:atomicfu org.jetbrains.kotlin\:kotlin-dom-api-compat
+ir_signature_versions=1,2
+jsOutputName=Coooomics-shared-feature-discover
+language_features=+AllowAnyAsAnActualTypeForExpectInterface +JsAllowValueClassesInExternals +MultiPlatformProjects
+metadata_version=1.4.1
+serializedIrFileFingerprints=1mznzp8xok0gh.3ncxf9fyj6z3w
+serializedKlibFingerprint=22gayojzrg4s.ocjxl98o2t51
+unique_name=Coooomics.shared.feature\:discover
+wasm_targets=wasm-js

@@ -1,0 +1,8 @@
+{
+  "buildPath": ":",
+  "projectPath": ":shared:core:model",
+  "moduleId": {
+    "groupId": "Coooomics.shared.core",
+    "moduleId": "model"
+  }
+}

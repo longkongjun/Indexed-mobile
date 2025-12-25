@@ -1,0 +1,12 @@
+abi_version=2.2.0
+builtins_platform=JS
+compiler_version=2.2.21
+depends=kotlin org.jetbrains.kotlin\:kotlin-dom-api-compat
+ir_signature_versions=1,2
+jsOutputName=Coooomics-shared-core-model
+language_features=+AllowAnyAsAnActualTypeForExpectInterface +JsAllowValueClassesInExternals +MultiPlatformProjects
+metadata_version=1.4.1
+serializedIrFileFingerprints=3kwsbuj1jio82.1odmfa8rwvpng
+serializedKlibFingerprint=1mkhz4d9iqvc.q4druc5v7gr7
+unique_name=Coooomics.shared.core\:model
+wasm_targets=wasm-js
