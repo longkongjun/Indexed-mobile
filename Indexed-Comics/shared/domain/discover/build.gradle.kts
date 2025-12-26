@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -15,19 +14,21 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                // 只依赖核心模块，不依赖任何数据层
                 implementation(project(":shared:core:model"))
-                implementation(project(":shared:core:network"))
-                implementation(project(":shared:domain:discover"))
-                implementation(libs.kotlinx.serialization.json)
             }
         }
-        val commonTest by getting { dependencies { implementation(kotlin("test")) } }
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+            }
+        }
     }
     jvmToolchain(11)
 }
 
 android {
-    namespace = "com.pusu.indexed.jikan"
+    namespace = "com.pusu.indexed.domain.discover"
     compileSdk = 36
     defaultConfig { minSdk = 24 }
     compileOptions {
@@ -35,3 +36,4 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 }
+

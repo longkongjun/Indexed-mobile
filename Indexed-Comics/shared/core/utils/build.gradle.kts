@@ -14,7 +14,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-
+                // utils 只包含纯工具函数，不依赖任何业务模块
             }
         }
         val commonTest by getting {

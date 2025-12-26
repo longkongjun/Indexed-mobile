@@ -46,10 +46,20 @@ android {
 }
 
 dependencies {
+    // Shared modules
     implementation(project(":shared:core:ui"))
     implementation(project(":shared:feature:discover"))
     implementation(project(":shared:feature:anime-detail"))
+    implementation(project(":shared:domain:discover"))
+    implementation(project(":shared:data:jikan"))
 
+    // Ktor (用于 DI 容器中创建 HttpClient)
+    implementation(libs.ktor.client.okhttp)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.ktor.client.logging)
+
+    // Android
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)

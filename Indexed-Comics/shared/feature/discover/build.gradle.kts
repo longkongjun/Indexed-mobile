@@ -16,13 +16,18 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                // Compose
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.material3)
-            implementation(project(":shared:core:model"))
-            implementation(project(":shared:core:ui"))
-            implementation(project(":shared:domain:feed"))
-            implementation(project(":shared:data:jikan"))
+                
+                // Domain layer (业务逻辑)
+                implementation(project(":shared:domain:discover"))
+                implementation(project(":shared:domain:feed"))
+                
+                // Core modules
+                implementation(project(":shared:core:model"))
+                implementation(project(":shared:core:ui"))
             }
         }
         val commonTest by getting {
