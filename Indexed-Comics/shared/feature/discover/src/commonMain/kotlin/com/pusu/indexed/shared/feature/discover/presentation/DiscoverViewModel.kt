@@ -1,6 +1,8 @@
 package com.pusu.indexed.shared.feature.discover.presentation
 
 import com.pusu.indexed.domain.discover.usecase.GetTrendingAnimeUseCase
+import com.pusu.indexed.domain.discover.usecase.GetCurrentSeasonAnimeUseCase
+import com.pusu.indexed.domain.discover.usecase.GetRandomAnimeUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,6 +30,8 @@ import kotlinx.coroutines.launch
  */
 class DiscoverViewModel(
     private val getTrendingAnimeUseCase: GetTrendingAnimeUseCase,
+    private val getCurrentSeasonAnimeUseCase: GetCurrentSeasonAnimeUseCase,
+    private val getRandomAnimeUseCase: GetRandomAnimeUseCase,
     private val coroutineScope: CoroutineScope
 ) {
     // UI 状态流
@@ -67,31 +71,32 @@ class DiscoverViewModel(
             // 1. 设置加载状态
             _uiState.update { it.copy(isLoading = true, error = null) }
 
-            // 2. 调用 UseCase 获取热门动漫
-            getTrendingAnimeUseCase(page = 1, limit = 10)
-                .onSuccess { animeList ->
-                    // 3. 成功：更新 UI 状态
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            trendingAnime = animeList,
-                            error = null
-                        )
-                    }
-                }
-                .onFailure { error ->
-                    // 4. 失败：显示错误
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            error = error.message ?: "未知错误"
-                        )
-                    }
-                    // 发送错误事件
-                    _uiEvent.emit(
-                        DiscoverUiEvent.ShowError(error.message ?: "加载失败")
+            // 2. 并行加载多个数据源
+            val trendingResult = getTrendingAnimeUseCase(page = 1, limit = 10)
+            val currentSeasonResult = getCurrentSeasonAnimeUseCase(page = 1, limit = 10)
+            
+            // 3. 处理结果
+            if (trendingResult.isSuccess || currentSeasonResult.isSuccess) {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        trendingAnime = trendingResult.getOrNull() ?: emptyList(),
+                        currentSeasonAnime = currentSeasonResult.getOrNull() ?: emptyList(),
+                        error = null
                     )
                 }
+            } else {
+                // 所有请求都失败
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = trendingResult.exceptionOrNull()?.message ?: "加载失败"
+                    )
+                }
+                _uiEvent.emit(
+                    DiscoverUiEvent.ShowError("加载失败，请重试")
+                )
+            }
         }
     }
     
@@ -126,11 +131,20 @@ class DiscoverViewModel(
     
     /**
      * 获取随机推荐
-     * 
-     * TODO: 实现 GetRandomAnimeUseCase
      */
     private fun getRandomPick() {
-        // 暂未实现
+        coroutineScope.launch {
+            getRandomAnimeUseCase()
+                .onSuccess { anime ->
+                    _uiState.update { it.copy(randomPick = anime) }
+                    _uiEvent.emit(DiscoverUiEvent.ShowSuccess("发现新动漫！"))
+                }
+                .onFailure { error ->
+                    _uiEvent.emit(
+                        DiscoverUiEvent.ShowError(error.message ?: "获取随机推荐失败")
+                    )
+                }
+        }
     }
     
     /**

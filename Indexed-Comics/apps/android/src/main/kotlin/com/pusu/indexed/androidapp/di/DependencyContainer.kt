@@ -83,6 +83,24 @@ class DependencyContainer(
         )
     }
     
+    /**
+     * 获取本季新番的 UseCase
+     */
+    private val getCurrentSeasonAnimeUseCase: com.pusu.indexed.domain.discover.usecase.GetCurrentSeasonAnimeUseCase by lazy {
+        com.pusu.indexed.domain.discover.usecase.GetCurrentSeasonAnimeUseCase(
+            repository = discoverRepository
+        )
+    }
+    
+    /**
+     * 获取随机动漫的 UseCase
+     */
+    private val getRandomAnimeUseCase: com.pusu.indexed.domain.discover.usecase.GetRandomAnimeUseCase by lazy {
+        com.pusu.indexed.domain.discover.usecase.GetRandomAnimeUseCase(
+            repository = discoverRepository
+        )
+    }
+    
     // ========================================
     // Feature 层：ViewModel
     // ========================================
@@ -95,6 +113,8 @@ class DependencyContainer(
     fun createDiscoverViewModel(coroutineScope: CoroutineScope): DiscoverViewModel {
         return DiscoverViewModel(
             getTrendingAnimeUseCase = getTrendingAnimeUseCase,
+            getCurrentSeasonAnimeUseCase = getCurrentSeasonAnimeUseCase,
+            getRandomAnimeUseCase = getRandomAnimeUseCase,
             coroutineScope = coroutineScope
         )
     }

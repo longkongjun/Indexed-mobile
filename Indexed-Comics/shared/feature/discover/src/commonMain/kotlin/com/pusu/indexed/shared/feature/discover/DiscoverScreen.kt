@@ -9,8 +9,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.pusu.indexed.domain.discover.model.AnimeItem
 import com.pusu.indexed.shared.feature.discover.presentation.DiscoverIntent
 import com.pusu.indexed.shared.feature.discover.presentation.DiscoverUiEvent
@@ -219,10 +221,167 @@ private fun ContentList(
             }
         }
         
-        // TODO: 添加更多区域
-        // - 本季新番
-        // - 随机推荐
-        // - 分类浏览
+        // 本季新番区域
+        if (uiState.currentSeasonAnime.isNotEmpty()) {
+            item {
+                SectionHeader(
+                    title = "📺 本季新番",
+                    onSeeAllClick = { /* TODO */ }
+                )
+            }
+            
+            item {
+                TrendingAnimeRow(
+                    animeList = uiState.currentSeasonAnime,
+                    onAnimeClick = { animeId ->
+                        onIntent(DiscoverIntent.OnAnimeClick(animeId))
+                    }
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+        }
+        
+        // 随机推荐区域
+        item {
+            RandomPickSection(
+                randomAnime = uiState.randomPick,
+                onGetRandomClick = { onIntent(DiscoverIntent.GetRandomPick) },
+                onAnimeClick = { animeId ->
+                    onIntent(DiscoverIntent.OnAnimeClick(animeId))
+                }
+            )
+        }
+    }
+}
+
+/**
+ * 随机推荐区域
+ */
+@Composable
+private fun RandomPickSection(
+    randomAnime: AnimeItem?,
+    onGetRandomClick: () -> Unit,
+    onAnimeClick: (Int) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "🎲 随机推荐",
+                style = MaterialTheme.typography.titleLarge
+            )
+            Button(onClick = onGetRandomClick) {
+                Text("换一个")
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        if (randomAnime != null) {
+            Card(
+                onClick = { onAnimeClick(randomAnime.id) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    // 封面
+                    Box(
+                        modifier = Modifier
+                            .width(100.dp)
+                            .height(140.dp)
+                    ) {
+                        AsyncImage(
+                            model = randomAnime.imageUrl,
+                            contentDescription = randomAnime.title,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.width(16.dp))
+                    
+                    // 信息
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = randomAnime.title,
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        randomAnime.score?.let {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(text = "⭐", style = MaterialTheme.typography.bodyMedium)
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = randomAnime.scoreText,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(4.dp))
+                        }
+                        
+                        randomAnime.type?.let {
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        
+                        if (randomAnime.genres.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = randomAnime.genres.take(3).joinToString(" · "),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.secondary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+                }
+            }
+        } else {
+            Card(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(140.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = "🎲",
+                            style = MaterialTheme.typography.displayMedium
+                        )
+                        Text(
+                            text = "点击按钮获取随机推荐",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -292,26 +451,12 @@ private fun AnimeCard(
                     .fillMaxWidth()
                     .height(200.dp)
             ) {
-                // TODO: 添加图片加载
-                // AsyncImage(
-                //     model = anime.imageUrl,
-                //     contentDescription = anime.title,
-                //     contentScale = ContentScale.Crop,
-                //     modifier = Modifier.fillMaxSize()
-                // )
-                
-                // 临时占位
-                Surface(
-                    color = MaterialTheme.colorScheme.surfaceVariant,
+                AsyncImage(
+                    model = anime.imageUrl,
+                    contentDescription = anime.title,
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Text(
-                            text = "图片",
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
-                }
+                )
                 
                 // 排名标签
                 anime.rank?.let { rank ->

@@ -9,25 +9,11 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.pusu.indexed.androidapp"
+        applicationId = "com.pusu.indexed.comics"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-    }
-
-    flavorDimensions += "app"
-    productFlavors {
-        create("demo") {
-            dimension = "app"
-            applicationId = "com.pusu.indexed.comics"
-            namespace = "com.pusu.indexed.comics"
-        }
-        create("shelf") {
-            dimension = "app"
-            applicationId = "com.pusu.indexed.shelf"
-            namespace = "com.pusu.indexed.shelf"
-        }
     }
 
     buildTypes {

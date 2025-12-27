@@ -16,6 +16,9 @@ composeBom = "2025.12.01"
 kotlinxSerializationJson = "1.9.0"
 ktorClientCio = "3.3.3"
 
+# Coil 图片加载
+coil = "3.0.4"
+
 # ==============================================================================
 # 库依赖
 # ==============================================================================
@@ -43,6 +46,10 @@ ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "k
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
+
+# Coil - 图片加载
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 
 # ==============================================================================
 # 插件

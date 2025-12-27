@@ -28,6 +28,10 @@ kotlin {
                 // Core modules
                 implementation(project(":shared:core:model"))
                 implementation(project(":shared:core:ui"))
+                
+                // 图片加载
+                implementation(libs.coil.compose)
+                implementation(libs.coil.network.ktor)
             }
         }
         val commonTest by getting {
