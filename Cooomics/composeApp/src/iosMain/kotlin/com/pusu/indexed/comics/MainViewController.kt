@@ -5,38 +5,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.window.ComposeUIViewController
 import com.pusu.indexed.comics.di.DependencyContainer
 import com.pusu.indexed.comics.navigation.AppNavigation
-import io.ktor.client.*
-import io.ktor.client.engine.darwin.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.plugins.logging.*
-import io.ktor.serialization.kotlinx.json.*
+import com.pusu.indexed.comics.platform.createHttpClient
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.serialization.json.Json
 
 /**
  * iOS 应用入口
  */
 @Composable
 fun IOSApp() {
-    // 创建 HttpClient
-    val httpClient = remember {
-        HttpClient(Darwin) {
-            install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                    isLenient = true
-                    prettyPrint = true
-                })
-            }
-            install(Logging) {
-                logger = Logger.DEFAULT
-                level = LogLevel.INFO
-            }
-        }
-    }
+    // 使用平台特定的 HttpClient 工厂创建客户端
+    val httpClient = remember { createHttpClient() }
     
     // 创建依赖容器
     val dependencyContainer = remember { DependencyContainer(httpClient) }
