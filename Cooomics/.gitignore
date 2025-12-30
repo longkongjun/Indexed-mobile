@@ -1,0 +1,167 @@
+# ==============================================================================
+# Kotlin Multiplatform Mobile (KMM) .gitignore
+# ==============================================================================
+
+# ==============================================================================
+# IDE - IntelliJ IDEA / Android Studio
+# ==============================================================================
+*.iml
+.idea/
+.idea
+*.ipr
+*.iws
+.navigation/
+
+# ==============================================================================
+# Gradle
+# ==============================================================================
+.gradle/
+.gradle
+**/build/
+!src/**/build/
+gradle-app.setting
+
+# ==============================================================================
+# Kotlin
+# ==============================================================================
+.kotlin/
+.kotlin
+kotlin-js-store/
+*.kotlin_module
+
+# ==============================================================================
+# Android
+# ==============================================================================
+# Built application files
+*.apk
+*.aar
+*.ap_
+*.aab
+
+# Files for the ART/Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
+# Generated files
+bin/
+gen/
+out/
+
+# Local configuration file
+local.properties
+
+# Android Studio captures folder
+captures/
+captures
+
+# Keystore files (never commit these!)
+*.jks
+*.keystore
+
+# External native build folder
+.externalNativeBuild/
+.externalNativeBuild
+.cxx/
+.cxx
+cmake-build-debug/
+cmake-build-release/
+
+# Android Profiler
+*.hprof
+
+# ==============================================================================
+# iOS / Xcode
+# ==============================================================================
+# User-specific files
+**/xcuserdata/
+xcuserdata
+
+# Xcode project files (keep only essential ones)
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+!*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
+
+# Build products
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Swift Package Manager
+.swiftpm/
+Packages/
+Package.pins
+Package.resolved
+*.xcworkspace
+
+# CocoaPods
+Pods/
+*.podspec
+Podfile.lock
+
+# Carthage
+Carthage/Build/
+
+# ==============================================================================
+# Desktop (JVM)
+# ==============================================================================
+*.jar
+!gradle-wrapper.jar
+!**/libs/*.jar
+
+# ==============================================================================
+# Web / JavaScript
+# ==============================================================================
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn.lock
+package-lock.json
+dist/
+webpack-config.d/
+
+# ==============================================================================
+# Compose Multiplatform
+# ==============================================================================
+compose-ui-*.jar
+.compose-cache/
+
+# ==============================================================================
+# macOS
+# ==============================================================================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# ==============================================================================
+# Windows
+# ==============================================================================
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ==============================================================================
+# Linux
+# ==============================================================================
+*~
+.directory
+
+# ==============================================================================
+# Logs
+# ==============================================================================
+*.log
+
+# ==============================================================================
+# Temporary files
+# ==============================================================================
+*.tmp
+*.bak
+*.swp
+*~.nib
