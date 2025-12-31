@@ -1,12 +1,13 @@
 package com.pusu.indexed.shared.feature.animedetail.presentation
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.pusu.indexed.domain.feed.usecase.GetAnimeDetailUseCase
 import com.pusu.indexed.domain.feed.usecase.GetAnimeRecommendationsUseCase
 import com.pusu.indexed.domain.feed.usecase.GetRelatedAnimeUseCase
 import com.pusu.indexed.shared.feature.animedetail.state.AnimeDetailIntent
 import com.pusu.indexed.shared.feature.animedetail.state.AnimeDetailUiEvent
 import com.pusu.indexed.shared.feature.animedetail.state.AnimeDetailUiState
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -16,13 +17,14 @@ import kotlinx.coroutines.launch
 
 /**
  * 动漫详情页 ViewModel
+ * 
+ * 继承自 androidx.lifecycle.ViewModel，使用 viewModelScope 管理协程生命周期
  */
 class AnimeDetailViewModel(
     private val getAnimeDetailUseCase: GetAnimeDetailUseCase,
     private val getRelatedAnimeUseCase: GetRelatedAnimeUseCase,
-    private val getAnimeRecommendationsUseCase: GetAnimeRecommendationsUseCase,
-    private val coroutineScope: CoroutineScope
-) {
+    private val getAnimeRecommendationsUseCase: GetAnimeRecommendationsUseCase
+) : ViewModel() {
     private val _uiState = MutableStateFlow(AnimeDetailUiState())
     val uiState = _uiState.asStateFlow()
     
@@ -46,7 +48,7 @@ class AnimeDetailViewModel(
     
     private fun loadAnimeDetail(animeId: Int) {
         currentAnimeId = animeId
-        coroutineScope.launch {
+        viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             
             try {
@@ -97,7 +99,7 @@ class AnimeDetailViewModel(
     
     private fun refresh() {
         currentAnimeId?.let { animeId ->
-            coroutineScope.launch {
+            viewModelScope.launch {
                 _uiState.update { it.copy(isRefreshing = true) }
                 
                 try {
@@ -146,7 +148,7 @@ class AnimeDetailViewModel(
     }
     
     private fun playTrailer() {
-        coroutineScope.launch {
+        viewModelScope.launch {
             _uiState.value.anime?.trailerUrl?.let { url ->
                 _uiEvent.emit(AnimeDetailUiEvent.OpenTrailer(url))
             } ?: run {
@@ -156,14 +158,14 @@ class AnimeDetailViewModel(
     }
     
     private fun addToFavorites() {
-        coroutineScope.launch {
+        viewModelScope.launch {
             // TODO: 实现收藏功能
             _uiEvent.emit(AnimeDetailUiEvent.ShowMessage("已添加到收藏"))
         }
     }
     
     private fun navigateToAnimeDetail(animeId: Int) {
-        coroutineScope.launch {
+        viewModelScope.launch {
             _uiEvent.emit(AnimeDetailUiEvent.NavigateToAnimeDetail(animeId))
         }
     }
@@ -173,9 +175,8 @@ class AnimeDetailViewModel(
     }
     
     private fun navigateBack() {
-        coroutineScope.launch {
+        viewModelScope.launch {
             _uiEvent.emit(AnimeDetailUiEvent.NavigateBack)
         }
     }
 }
-

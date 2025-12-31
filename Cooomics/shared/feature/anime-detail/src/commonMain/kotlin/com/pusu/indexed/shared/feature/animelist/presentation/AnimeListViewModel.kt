@@ -1,9 +1,10 @@
 package com.pusu.indexed.shared.feature.animedetail.animelist.presentation
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.pusu.indexed.domain.discover.usecase.GetTrendingAnimeUseCase
 import com.pusu.indexed.domain.discover.usecase.GetCurrentSeasonAnimeUseCase
 import com.pusu.indexed.domain.discover.usecase.GetTopRankedAnimeUseCase
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -19,14 +20,15 @@ import kotlinx.coroutines.launch
  * 2. 处理用户意图（Intent）
  * 3. 调用 UseCase（业务逻辑）
  * 4. 支持分页加载和下拉刷新
+ * 
+ * 继承自 androidx.lifecycle.ViewModel，使用 viewModelScope 管理协程生命周期
  */
 class AnimeListViewModel(
     private val listType: AnimeListType,
     private val getTrendingAnimeUseCase: GetTrendingAnimeUseCase,
     private val getCurrentSeasonAnimeUseCase: GetCurrentSeasonAnimeUseCase,
-    private val getTopRankedAnimeUseCase: GetTopRankedAnimeUseCase,
-    private val coroutineScope: CoroutineScope
-) {
+    private val getTopRankedAnimeUseCase: GetTopRankedAnimeUseCase
+) : ViewModel() {
     // UI 状态流
     private val _uiState = MutableStateFlow(
         AnimeListUiState(
@@ -71,7 +73,7 @@ class AnimeListViewModel(
     private fun loadInitial() {
         if (_uiState.value.isLoading) return
 
-        coroutineScope.launch {
+        viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
 
             val result = loadData(page = 1)
@@ -107,7 +109,7 @@ class AnimeListViewModel(
     private fun refresh() {
         if (_uiState.value.isRefreshing) return
 
-        coroutineScope.launch {
+        viewModelScope.launch {
             _uiState.update { it.copy(isRefreshing = true, error = null) }
 
             val result = loadData(page = 1)
@@ -149,7 +151,7 @@ class AnimeListViewModel(
             return
         }
 
-        coroutineScope.launch {
+        viewModelScope.launch {
             _uiState.update { it.copy(isLoadingMore = true) }
 
             val nextPage = currentState.currentPage + 1
@@ -190,7 +192,7 @@ class AnimeListViewModel(
      * 导航到详情页
      */
     private fun navigateToDetail(animeId: Int) {
-        coroutineScope.launch {
+        viewModelScope.launch {
             _uiEvent.emit(AnimeListUiEvent.NavigateToDetail(animeId))
         }
     }
@@ -212,4 +214,3 @@ class AnimeListViewModel(
         }
     }
 }
-

@@ -1,119 +1,183 @@
 package com.pusu.indexed.comics.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.ui.NavDisplay
+import androidx.savedstate.serialization.SavedStateConfiguration
 import com.pusu.indexed.comics.di.DependencyContainer
 import com.pusu.indexed.comics.splash.SplashScreen
 import com.pusu.indexed.shared.feature.animedetail.AnimeDetailScreen
 import com.pusu.indexed.shared.feature.animedetail.animelist.AnimeListScreen
 import com.pusu.indexed.shared.feature.animedetail.animelist.presentation.AnimeListType
 import com.pusu.indexed.shared.feature.discover.DiscoverScreen
+import com.pusu.indexed.shared.feature.discover.presentation.DiscoverViewModel
 import com.pusu.indexed.shared.feature.search.SearchScreen
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
 
 /**
- * 屏幕定义
+ * 导航目标定义
+ *
+ * 使用 @Serializable 注解标记，以便 Navigation3 可以序列化和反序列化
  */
-sealed class Screen {
-    data object Splash : Screen()           // 启动页
-    data object Discover : Screen()
-    data object Search : Screen()
-    data class AnimeDetail(val animeId: Int) : Screen()
-    data class AnimeList(val listType: AnimeListType) : Screen()  // 列表页
+@Serializable
+sealed interface Screen {
+    @Serializable
+    data object Splash : Screen, NavKey
+
+    @Serializable
+    data object Discover : Screen, NavKey
+
+    @Serializable
+    data object Search : Screen, NavKey
+
+    @Serializable
+    data class AnimeDetail(val animeId: Int) : Screen, NavKey
+
+    @Serializable
+    data class AnimeList(val listType: String) : Screen, NavKey
+}
+
+/**
+ * SavedState 配置
+ *
+ * 配置多态序列化以支持 NavKey 的所有子类型
+ */
+private val savedStateConfig = SavedStateConfiguration {
+    serializersModule = SerializersModule {
+        polymorphic(NavKey::class) {
+            subclass(Screen.Splash::class)
+            subclass(Screen.Discover::class)
+            subclass(Screen.Search::class)
+            subclass(Screen.AnimeDetail::class)
+            subclass(Screen.AnimeList::class)
+        }
+    }
 }
 
 /**
  * 应用导航组件
- * 
- * 简单的导航实现：使用 State 来管理当前显示的页面
+ *
+ * 使用 Navigation3 (Multiplatform) 实现类型安全的导航
  */
 @Composable
 fun AppNavigation(
-    dependencyContainer: DependencyContainer,
-    scope: CoroutineScope
+    dependencyContainer: DependencyContainer
 ) {
-    // 当前页面状态（从启动页开始）
-    var currentScreen by remember { mutableStateOf<Screen>(Screen.Splash) }
-    
-    // 缓存 DiscoverViewModel，避免每次返回时重新创建
-    val discoverViewModel = remember {
-        dependencyContainer.createDiscoverViewModel(scope)
-    }
-    
-    // 缓存 SearchViewModel
-    val searchViewModel = remember {
-        dependencyContainer.createSearchViewModel(scope)
-    }
-    
-    when (val screen = currentScreen) {
-        is Screen.Splash -> {
-            SplashScreen(
-                onSplashFinished = {
-                    currentScreen = Screen.Discover
-                }
-            )
-        }
-        is Screen.Discover -> {
-            DiscoverScreen(
-                viewModel = discoverViewModel,
-                onNavigateToDetail = { animeId ->
-                    currentScreen = Screen.AnimeDetail(animeId)
-                },
-                onNavigateToSearch = {
-                    currentScreen = Screen.Search
-                },
-                onNavigateToList = { listType ->
-                    currentScreen = Screen.AnimeList(listType)
-                }
-            )
-        }
-        is Screen.Search -> {
-            SearchScreen(
-                viewModel = searchViewModel,
-                onNavigateBack = {
-                    currentScreen = Screen.Discover
-                },
-                onNavigateToDetail = { animeId ->
-                    currentScreen = Screen.AnimeDetail(animeId)
-                }
-            )
-        }
-        is Screen.AnimeDetail -> {
-            // 每个详情页使用独立的 ViewModel，根据 animeId 区分
-            val viewModel = remember(screen.animeId) {
-                dependencyContainer.createAnimeDetailViewModel(scope)
-            }
-            
-            AnimeDetailScreen(
-                animeId = screen.animeId,
-                viewModel = viewModel,
-                onNavigateBack = {
-                    currentScreen = Screen.Discover
-                },
-                onNavigateToAnimeDetail = { animeId ->
-                    currentScreen = Screen.AnimeDetail(animeId)
-                }
-            )
-        }
-        is Screen.AnimeList -> {
-            // 列表页使用独立的 ViewModel，根据 listType 区分
-            val viewModel = remember(screen.listType) {
-                dependencyContainer.createAnimeListViewModel(screen.listType, scope)
-            }
-            
-            AnimeListScreen(
-                viewModel = viewModel,
-                onNavigateBack = {
-                    currentScreen = Screen.Discover
-                },
-                onNavigateToDetail = { animeId ->
-                    currentScreen = Screen.AnimeDetail(animeId)
-                }
-            )
-        }
-    }
-}
+    // 创建导航返回栈，从 Splash 页面开始，使用配置好的序列化模块
+    val backStack = rememberNavBackStack(savedStateConfig, Screen.Splash)
 
+    // 使用 NavDisplay 显示当前导航状态
+    // 添加 ViewModel 装饰器，使每个 NavEntry 都有自己的 ViewModelStore
+    NavDisplay(
+        backStack = backStack,
+        entryDecorators = listOf(
+            // 注意：装饰器顺序很重要！
+            // SaveableStateHolder 必须在 ViewModelStore 之前，以支持 SavedStateHandle
+            rememberSaveableStateHolderNavEntryDecorator(),
+            // ViewModelStore 装饰器：为每个导航目的地提供独立的 ViewModel 存储
+            rememberViewModelStoreNavEntryDecorator(),
+        ),
+        entryProvider = entryProvider {
+            // 启动页
+            entry<Screen.Splash> {
+                SplashScreen(
+                    onSplashFinished = {
+                        // 启动完成后，导航到发现页并清除启动页
+                        backStack.clear()
+                        backStack.add(Screen.Discover)
+                    }
+                )
+            }
+
+            // 发现页（主页）
+            entry<Screen.Discover> {
+                // 使用 Navigation3 的 ViewModel 能力，自动管理生命周期
+                val viewModel = viewModel {
+                    dependencyContainer.createDiscoverViewModel()
+                }
+
+                DiscoverScreen(
+                    viewModel = viewModel,
+                    onNavigateToDetail = { animeId ->
+                        backStack.add(Screen.AnimeDetail(animeId))
+                    },
+                    onNavigateToSearch = {
+                        backStack.add(Screen.Search)
+                    },
+                    onNavigateToList = { listType ->
+                        backStack.add(Screen.AnimeList(listType.name))
+                    }
+                )
+            }
+
+            // 搜索页
+            entry<Screen.Search> {
+                // 使用 Navigation3 的 ViewModel 能力，自动管理生命周期
+                val viewModel = viewModel {
+                    dependencyContainer.createSearchViewModel()
+                }
+
+                SearchScreen(
+                    viewModel = viewModel,
+                    onNavigateBack = {
+                        backStack.removeLastOrNull()
+                    },
+                    onNavigateToDetail = { animeId ->
+                        backStack.add(Screen.AnimeDetail(animeId))
+                    }
+                )
+            }
+
+            // 动漫详情页
+            entry<Screen.AnimeDetail> { screen ->
+                // 使用 Navigation3 的 ViewModel 能力，自动管理生命周期
+                // 每个不同的 animeId 会创建独立的 ViewModel 实例
+                val viewModel = viewModel(key = "AnimeDetail_${screen.animeId}") {
+                    dependencyContainer.createAnimeDetailViewModel()
+                }
+
+                AnimeDetailScreen(
+                    animeId = screen.animeId,
+                    viewModel = viewModel,
+                    onNavigateBack = {
+                        backStack.removeLastOrNull()
+                    },
+                    onNavigateToAnimeDetail = { animeId ->
+                        backStack.add(Screen.AnimeDetail(animeId))
+                    }
+                )
+            }
+
+            // 动漫列表页
+            entry<Screen.AnimeList> { screen ->
+                val listType = AnimeListType.valueOf(screen.listType)
+
+                // 使用 Navigation3 的 ViewModel 能力，自动管理生命周期
+                // 每个不同的 listType 会创建独立的 ViewModel 实例
+                val viewModel = viewModel(key = "AnimeList_${listType.name}") {
+                    dependencyContainer.createAnimeListViewModel(listType)
+                }
+
+                AnimeListScreen(
+                    viewModel = viewModel,
+                    onNavigateBack = {
+                        backStack.removeLastOrNull()
+                    },
+                    onNavigateToDetail = { animeId ->
+                        backStack.add(Screen.AnimeDetail(animeId))
+                    }
+                )
+            }
+        }
+    )
+}

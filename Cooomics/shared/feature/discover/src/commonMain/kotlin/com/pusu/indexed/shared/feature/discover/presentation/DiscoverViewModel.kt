@@ -1,9 +1,10 @@
 package com.pusu.indexed.shared.feature.discover.presentation
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.pusu.indexed.domain.discover.usecase.GetTrendingAnimeUseCase
 import com.pusu.indexed.domain.discover.usecase.GetCurrentSeasonAnimeUseCase
 import com.pusu.indexed.domain.discover.usecase.GetTopRankedAnimeUseCase
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -23,17 +24,13 @@ import kotlinx.coroutines.launch
  * 依赖链：
  * UI → ViewModel → UseCase → Repository → API
  * 
- * 注意：这里使用 CoroutineScope 而不是 ViewModel，因为我们需要跨平台支持。
- * 在实际使用中：
- * - Android: 可以继承 androidx.lifecycle.ViewModel
- * - iOS/Desktop/Web: 手动管理生命周期
+ * 继承自 androidx.lifecycle.ViewModel，使用 viewModelScope 管理协程生命周期
  */
 class DiscoverViewModel(
     private val getTrendingAnimeUseCase: GetTrendingAnimeUseCase,
     private val getCurrentSeasonAnimeUseCase: GetCurrentSeasonAnimeUseCase,
-    private val getTopRankedAnimeUseCase: GetTopRankedAnimeUseCase,
-    private val coroutineScope: CoroutineScope
-) {
+    private val getTopRankedAnimeUseCase: GetTopRankedAnimeUseCase
+) : ViewModel() {
     // UI 状态流
     private val _uiState = MutableStateFlow(DiscoverUiState())
     val uiState = _uiState.asStateFlow()
@@ -66,7 +63,7 @@ class DiscoverViewModel(
      * ViewModel → UseCase → Repository → Jikan API
      */
     private fun loadContent() {
-        coroutineScope.launch {
+        viewModelScope.launch {
             // 1. 设置加载状态
             _uiState.update { it.copy(isLoading = true, error = null) }
 
@@ -105,7 +102,7 @@ class DiscoverViewModel(
      * 刷新内容
      */
     private fun refresh() {
-        coroutineScope.launch {
+        viewModelScope.launch {
             _uiState.update { it.copy(isRefreshing = true, error = null) }
             
             // 并行刷新所有数据
@@ -135,7 +132,7 @@ class DiscoverViewModel(
      * 导航到详情页
      */
     private fun navigateToDetail(animeId: Int) {
-        coroutineScope.launch {
+        viewModelScope.launch {
             _uiEvent.emit(DiscoverUiEvent.NavigateToDetail(animeId))
         }
     }
@@ -150,11 +147,11 @@ class DiscoverViewModel(
     /**
      * 清理资源
      * 
-     * 在 ViewModel 销毁时调用（如果有生命周期管理的话）
+     * ViewModel 销毁时自动调用，viewModelScope 会自动取消所有协程
      */
-    fun onCleared() {
-        // 取消所有协程
-        // 注意：在实际使用中，coroutineScope 应该在这里被取消
+    override fun onCleared() {
+        super.onCleared()
+        // viewModelScope 会自动取消所有协程，无需手动处理
     }
 }
 

@@ -58,6 +58,10 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             
+            // Navigation3 Compose Multiplatform
+            implementation(libs.jetbrains.navigation3.ui)
+            implementation(libs.jetbrains.lifecycle.viewmodelNavigation3)
+            
             // Shared modules
             implementation(project(":shared:core:ui"))
             implementation(project(":shared:feature:discover"))

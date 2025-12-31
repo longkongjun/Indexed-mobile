@@ -30,7 +30,6 @@ class MainActivity : ComponentActivity() {
             MaterialTheme {
                 AppNavigation(
                     dependencyContainer = dependencyContainer,
-                    scope = scope
                 )
             }
         }

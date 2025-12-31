@@ -27,6 +27,9 @@ ktor = "3.3.3"
 kotlinx-serialization-json = "1.9.0"
 coil = "3.3.0"
 
+multiplatform-nav3-ui = "1.0.0-alpha06"
+compose-multiplatform-lifecycle = "2.10.0-alpha07"
+
 # ==============================================================================
 # 库依赖
 # ==============================================================================
@@ -54,6 +57,10 @@ ktor-client-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
 # Coil 图片加载库
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
+
+# Navigation3 Compose Multiplatform
+jetbrains-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "multiplatform-nav3-ui" }
+jetbrains-lifecycle-viewmodelNavigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "compose-multiplatform-lifecycle" }
 
 # ==============================================================================
 # 插件

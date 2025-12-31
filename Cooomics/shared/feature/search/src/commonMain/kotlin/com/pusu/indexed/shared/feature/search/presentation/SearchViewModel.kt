@@ -1,7 +1,8 @@
 package com.pusu.indexed.shared.feature.search.presentation
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.pusu.indexed.domain.discover.usecase.SearchAnimeUseCase
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -17,11 +18,12 @@ import kotlinx.coroutines.launch
  * 2. 处理用户意图（Intent）
  * 3. 调用 UseCase（业务逻辑）
  * 4. 发送 UI 事件（UiEvent）
+ * 
+ * 继承自 androidx.lifecycle.ViewModel，使用 viewModelScope 管理协程生命周期
  */
 class SearchViewModel(
-    private val searchAnimeUseCase: SearchAnimeUseCase,
-    private val coroutineScope: CoroutineScope
-) {
+    private val searchAnimeUseCase: SearchAnimeUseCase
+) : ViewModel() {
     // UI 状态流
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState = _uiState.asStateFlow()
@@ -59,7 +61,7 @@ class SearchViewModel(
             return
         }
         
-        coroutineScope.launch {
+        viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             
             val result = searchAnimeUseCase(query = query, page = 1, limit = 20)
@@ -102,7 +104,7 @@ class SearchViewModel(
      * 导航到详情页
      */
     private fun navigateToDetail(animeId: Int) {
-        coroutineScope.launch {
+        viewModelScope.launch {
             _uiEvent.emit(SearchUiEvent.NavigateToDetail(animeId))
         }
     }

@@ -165,40 +165,37 @@ class DependencyContainer(
     /**
      * 创建 DiscoverViewModel
      * 
-     * @param coroutineScope 协程作用域（由调用方提供，用于管理生命周期）
+     * 使用 androidx.lifecycle.ViewModel，自动管理生命周期
      */
-    fun createDiscoverViewModel(coroutineScope: CoroutineScope): DiscoverViewModel {
+    fun createDiscoverViewModel(): DiscoverViewModel {
         return DiscoverViewModel(
             getTrendingAnimeUseCase = getTrendingAnimeUseCase,
             getCurrentSeasonAnimeUseCase = getCurrentSeasonAnimeUseCase,
-            getTopRankedAnimeUseCase = getTopRankedAnimeUseCase,
-            coroutineScope = coroutineScope
+            getTopRankedAnimeUseCase = getTopRankedAnimeUseCase
         )
     }
     
     /**
      * 创建 AnimeDetailViewModel
      * 
-     * @param coroutineScope 协程作用域（由调用方提供，用于管理生命周期）
+     * 使用 androidx.lifecycle.ViewModel，自动管理生命周期
      */
-    fun createAnimeDetailViewModel(coroutineScope: CoroutineScope): AnimeDetailViewModel {
+    fun createAnimeDetailViewModel(): AnimeDetailViewModel {
         return AnimeDetailViewModel(
             getAnimeDetailUseCase = getAnimeDetailUseCase,
             getRelatedAnimeUseCase = getRelatedAnimeUseCase,
-            getAnimeRecommendationsUseCase = getAnimeRecommendationsUseCase,
-            coroutineScope = coroutineScope
+            getAnimeRecommendationsUseCase = getAnimeRecommendationsUseCase
         )
     }
     
     /**
      * 创建 SearchViewModel
      *
-     * @param coroutineScope 协程作用域（由调用方提供，用于管理生命周期）
+     * 使用 androidx.lifecycle.ViewModel，自动管理生命周期
      */
-    fun createSearchViewModel(coroutineScope: CoroutineScope): SearchViewModel {
+    fun createSearchViewModel(): SearchViewModel {
         return SearchViewModel(
-            searchAnimeUseCase = searchAnimeUseCase,
-            coroutineScope = coroutineScope
+            searchAnimeUseCase = searchAnimeUseCase
         )
     }
 
@@ -206,18 +203,15 @@ class DependencyContainer(
      * 创建 AnimeListViewModel
      *
      * @param listType 列表类型（热门、本季新番、排行榜）
-     * @param coroutineScope 协程作用域（由调用方提供，用于管理生命周期）
+     * 
+     * 使用 androidx.lifecycle.ViewModel，自动管理生命周期
      */
-    fun createAnimeListViewModel(
-        listType: AnimeListType,
-        coroutineScope: CoroutineScope
-    ): AnimeListViewModel {
+    fun createAnimeListViewModel(listType: AnimeListType): AnimeListViewModel {
         return AnimeListViewModel(
             listType = listType,
             getTrendingAnimeUseCase = getTrendingAnimeUseCase,
             getCurrentSeasonAnimeUseCase = getCurrentSeasonAnimeUseCase,
-            getTopRankedAnimeUseCase = getTopRankedAnimeUseCase,
-            coroutineScope = coroutineScope
+            getTopRankedAnimeUseCase = getTopRankedAnimeUseCase
         )
     }
 }
