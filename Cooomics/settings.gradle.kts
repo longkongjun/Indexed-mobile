@@ -32,26 +32,30 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
-// Shared KMM + Compose Multiplatform modules
-// Core modules
-include(":shared:core:model")
-include(":shared:core:utils")
-include(":shared:core:ui")
-include(":shared:core:network")
+// ============================================
+// Core Modules (基础设施层)
+// ============================================
+include(":core:utils")
+include(":core:network")
 
-// Domain modules
-include(":shared:domain:feed")
-include(":shared:domain:discover")
+// ============================================
+// Data Modules (数据层)
+// ============================================
+include(":data:jikan")
 
-// Data modules
-include(":shared:data:jikan")
+// ============================================
+// Domain Modules (业务逻辑层)
+// ============================================
+include(":domain:anime")
 
-// Feature modules
-include(":shared:feature:discover")
-include(":shared:feature:anime-detail")
-include(":shared:feature:search")
+// ============================================
+// Feature Modules (功能模块层)
+// ============================================
+include(":feature:discover")
+include(":feature:anime-detail")
+include(":feature:search")
 
-// Navigation
-include(":shared:navigation")
-
-include(":composeApp")
+// ============================================
+// Application Module
+// ============================================
+include(":app")
