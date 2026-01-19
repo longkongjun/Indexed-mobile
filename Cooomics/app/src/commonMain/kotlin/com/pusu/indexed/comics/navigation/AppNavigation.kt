@@ -111,10 +111,10 @@ fun AppNavigation() {
                 )
             }
 
-                    // 发现页（主页）
-                    entry<Screen.Discover> {
-                        // 使用 Koin Compose 注入 ViewModel
-                        val viewModel: DiscoverViewModel = koinInject<DiscoverViewModel>()
+            // 发现页（主页）
+            entry<Screen.Discover> {
+                // 使用 Koin Compose 注入 ViewModel
+                val viewModel: DiscoverViewModel = koinInject<DiscoverViewModel>()
 
                 DiscoverScreen(
                     viewModel = viewModel,
@@ -136,10 +136,10 @@ fun AppNavigation() {
                 )
             }
 
-                    // 搜索页
-                    entry<Screen.Search> {
-                        // 使用 Koin Compose 注入 ViewModel
-                        val viewModel: SearchViewModel = koinInject<SearchViewModel>()
+            // 搜索页
+            entry<Screen.Search> {
+                // 使用 Koin Compose 注入 ViewModel
+                val viewModel: SearchViewModel = koinInject<SearchViewModel>()
 
                 SearchScreen(
                     viewModel = viewModel,
@@ -206,7 +206,7 @@ fun AppNavigation() {
 
                 // 使用 Koin Compose 注入 ViewModel
                 val viewModel: AnimeListViewModel = koinInject<AnimeListViewModel>()
-                
+
                 // 初始化列表类型（使用 LaunchedEffect 确保每个 ViewModel 实例只初始化一次）
                 LaunchedEffect(viewModel) {
                     viewModel.initListType(listType)

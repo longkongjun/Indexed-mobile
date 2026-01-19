@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,6 +22,7 @@ import com.pusu.indexed.shared.feature.discover.presentation.DiscoverIntent
 import com.pusu.indexed.shared.feature.discover.presentation.DiscoverUiEvent
 import com.pusu.indexed.shared.feature.discover.presentation.DiscoverUiState
 import com.pusu.indexed.shared.feature.discover.presentation.DiscoverViewModel
+import kotlinx.coroutines.launch
 
 /**
  * Discover 主屏幕
@@ -94,53 +97,89 @@ private fun DiscoverContent(
     onSubscriptionClick: () -> Unit,
     onSeeAllClick: (AnimeListType) -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        // 顶部标题栏
-        TopAppBar(
-            title = { Text("发现") },
-            actions = {
-                // 筛选按钮
-                TextButton(onClick = onFilterClick) {
-                    Text("🎯 筛选")
-                }
-                // 订阅按钮
-                TextButton(onClick = onSubscriptionClick) {
-                    Text("📌 订阅")
-                }
-                // 搜索按钮
-                TextButton(onClick = onSearchClick) {
-                    Text("🔍 搜索")
-                }
-            }
-        )
-        
-        // 主内容区域
-        when {
-            // 加载状态
-            uiState.isLoading && !uiState.hasContent -> {
-                LoadingContent()
-            }
-            
-            // 错误状态
-            uiState.hasError && !uiState.hasContent -> {
-                ErrorContent(
-                    message = uiState.error ?: "加载失败",
-                    onRetry = { onIntent(DiscoverIntent.Retry) }
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet {
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = "菜单",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
-            }
-            
-            // 有内容
-            uiState.hasContent -> {
-                ContentList(
-                    uiState = uiState,
-                    onIntent = onIntent,
-                    onSeeAllClick = onSeeAllClick
+                NavigationDrawerItem(
+                    label = { Text("发现") },
+                    selected = true,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                    },
+                    modifier = Modifier.padding(horizontal = 12.dp)
                 )
+                NavigationDrawerItem(
+                    label = { Text("我的订阅") },
+                    selected = false,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        onSubscriptionClick()
+                    },
+                    modifier = Modifier.padding(horizontal = 12.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
             }
-            
-            // 空状态
-            else -> {
-                EmptyContent()
+        }
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            // 顶部标题栏
+            TopAppBar(
+                title = { Text("发现") },
+                navigationIcon = {
+                    IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                        Icon(Icons.Default.Menu, contentDescription = "菜单")
+                    }
+                },
+                actions = {
+                    // 筛选按钮
+                    TextButton(onClick = onFilterClick) {
+                        Text("🎯 筛选")
+                    }
+                    // 搜索按钮
+                    TextButton(onClick = onSearchClick) {
+                        Text("🔍 搜索")
+                    }
+                }
+            )
+
+            // 主内容区域
+            when {
+                // 加载状态
+                uiState.isLoading && !uiState.hasContent -> {
+                    LoadingContent()
+                }
+
+                // 错误状态
+                uiState.hasError && !uiState.hasContent -> {
+                    ErrorContent(
+                        message = uiState.error ?: "加载失败",
+                        onRetry = { onIntent(DiscoverIntent.Retry) }
+                    )
+                }
+
+                // 有内容
+                uiState.hasContent -> {
+                    ContentList(
+                        uiState = uiState,
+                        onIntent = onIntent,
+                        onSeeAllClick = onSeeAllClick
+                    )
+                }
+
+                // 空状态
+                else -> {
+                    EmptyContent()
+                }
             }
         }
     }

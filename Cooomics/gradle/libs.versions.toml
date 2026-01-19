@@ -16,7 +16,7 @@ androidx-lifecycle = "2.9.6"
 
 # Compose
 composeHotReload = "1.0.0"
-composeMultiplatform = "1.9.3"
+composeMultiplatform = "1.10.0"
 
 # Kotlin
 kotlin = "2.3.0"
@@ -29,7 +29,7 @@ coil = "3.3.0"
 
 multiplatform-nav3-ui = "1.0.0-alpha06"
 compose-multiplatform-lifecycle = "2.10.0-alpha07"
-koin = "4.2.0-beta2"
+koin = "4.2.0-beta3"
 
 # ==============================================================================
 # 库依赖
