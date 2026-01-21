@@ -29,11 +29,6 @@ kotlin {
     
     jvm()
     
-    js {
-        browser()
-        binaries.executable()
-    }
-    
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
@@ -62,10 +57,17 @@ kotlin {
             implementation(libs.jetbrains.navigation3.ui)
             implementation(libs.jetbrains.lifecycle.viewmodelNavigation3)
             
+            // Koin 依赖注入（KMP 支持）
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+            
             // Shared modules
             implementation(project(":feature:discover"))
             implementation(project(":feature:anime-detail"))
             implementation(project(":feature:search"))
+            implementation(project(":feature:subscription"))
+            implementation(project(":feature:settings"))
+            implementation(project(":core:utils"))
             implementation(project(":domain:anime"))
             implementation(project(":data:jikan"))
             
@@ -93,10 +95,6 @@ kotlin {
             implementation(libs.kotlinx.coroutinesSwing)
             // Ktor for JVM
             implementation(libs.ktor.client.okhttp)
-        }
-        jsMain.dependencies {
-            // Ktor for JS
-            implementation(libs.ktor.client.js)
         }
     }
 }

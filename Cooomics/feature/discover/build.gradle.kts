@@ -11,7 +11,6 @@ kotlin {
     iosX64()
     iosSimulatorArm64()
     jvm("desktop")
-    js(IR) { browser() }
 
     sourceSets {
         val commonMain by getting {
@@ -20,9 +19,13 @@ kotlin {
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.material3)
+                implementation(compose.materialIconsExtended)
                 
                 // Domain layer (业务逻辑)
                 implementation(project(":domain:anime"))
+
+                // Core utils
+                implementation(project(":core:utils"))
 
                 // Feature modules (for navigation types)
                 implementation(project(":feature:anime-detail"))
@@ -37,9 +40,6 @@ kotlin {
         }
         val desktopMain by getting {
             dependencies { implementation(compose.desktop.currentOs) }
-        }
-        val jsMain by getting {
-            dependencies { implementation(compose.html.core) }
         }
     }
     jvmToolchain(11)

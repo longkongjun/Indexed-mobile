@@ -11,7 +11,6 @@ kotlin {
     iosX64()
     iosSimulatorArm64()
     jvm("desktop")
-    js(IR) { browser() }
 
     sourceSets {
         val commonMain by getting {
@@ -24,6 +23,9 @@ kotlin {
                 
                 // Domain layer (业务逻辑)
                 implementation(project(":domain:anime"))
+
+                // Core utils
+                implementation(project(":core:utils"))
                 
                 // 图片加载
                 implementation(libs.coil.compose)
@@ -35,9 +37,6 @@ kotlin {
         }
         val desktopMain by getting {
             dependencies { implementation(compose.desktop.currentOs) }
-        }
-        val jsMain by getting {
-            dependencies { implementation(compose.html.core) }
         }
     }
     jvmToolchain(11)

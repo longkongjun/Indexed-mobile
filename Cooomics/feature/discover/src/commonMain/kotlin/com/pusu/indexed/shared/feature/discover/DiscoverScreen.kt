@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -14,12 +16,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.pusu.indexed.core.locale.AppLanguage
+import com.pusu.indexed.core.locale.resolveTitle
 import com.pusu.indexed.domain.anime.model.AnimeItem
 import com.pusu.indexed.shared.feature.animedetail.animelist.presentation.AnimeListType
 import com.pusu.indexed.shared.feature.discover.presentation.DiscoverIntent
 import com.pusu.indexed.shared.feature.discover.presentation.DiscoverUiEvent
 import com.pusu.indexed.shared.feature.discover.presentation.DiscoverUiState
 import com.pusu.indexed.shared.feature.discover.presentation.DiscoverViewModel
+import kotlinx.coroutines.launch
 
 /**
  * Discover 主屏幕
@@ -37,8 +42,12 @@ import com.pusu.indexed.shared.feature.discover.presentation.DiscoverViewModel
 @Composable
 fun DiscoverScreen(
     viewModel: DiscoverViewModel,
+    appLanguage: AppLanguage,
     onNavigateToDetail: (Int) -> Unit = {},
     onNavigateToSearch: () -> Unit = {},
+    onNavigateToFilter: () -> Unit = {},
+    onNavigateToSubscription: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {},
     onNavigateToList: (AnimeListType) -> Unit = {}
 ) {
     // 1. 收集 UI 状态
@@ -66,8 +75,12 @@ fun DiscoverScreen(
     // 3. 渲染 UI
     DiscoverContent(
         uiState = uiState,
+        appLanguage = appLanguage,
         onIntent = viewModel::handleIntent,
         onSearchClick = onNavigateToSearch,
+        onFilterClick = onNavigateToFilter,
+        onSubscriptionClick = onNavigateToSubscription,
+        onSettingsClick = onNavigateToSettings,
         onSeeAllClick = onNavigateToList
     )
 }
@@ -84,49 +97,107 @@ fun DiscoverScreen(
 @Composable
 private fun DiscoverContent(
     uiState: DiscoverUiState,
+    appLanguage: AppLanguage,
     onIntent: (DiscoverIntent) -> Unit,
     onSearchClick: () -> Unit,
+    onFilterClick: () -> Unit,
+    onSubscriptionClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     onSeeAllClick: (AnimeListType) -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        // 顶部标题栏
-        TopAppBar(
-            title = { Text("发现") },
-            actions = {
-                // 搜索按钮
-                TextButton(onClick = onSearchClick) {
-                    Text("🔍 搜索")
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet {
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = "菜单",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+                NavigationDrawerItem(
+                    label = { Text("发现") },
+                    selected = true,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                    },
+                    modifier = Modifier.padding(horizontal = 12.dp)
+                )
+                NavigationDrawerItem(
+                    label = { Text("我的订阅") },
+                    selected = false,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        onSubscriptionClick()
+                    },
+                    modifier = Modifier.padding(horizontal = 12.dp)
+                )
+                NavigationDrawerItem(
+                    label = { Text("设置") },
+                    selected = false,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        onSettingsClick()
+                    },
+                    modifier = Modifier.padding(horizontal = 12.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+        }
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            // 顶部标题栏
+            TopAppBar(
+                title = { Text("发现") },
+                navigationIcon = {
+                    IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                        Icon(Icons.Default.Menu, contentDescription = "菜单")
+                    }
+                },
+                actions = {
+                    // 筛选按钮
+                    TextButton(onClick = onFilterClick) {
+                        Text("🎯 筛选")
+                    }
+                    // 搜索按钮
+                    TextButton(onClick = onSearchClick) {
+                        Text("🔍 搜索")
+                    }
                 }
-            }
-        )
-        
-        // 主内容区域
-        when {
-            // 加载状态
-            uiState.isLoading && !uiState.hasContent -> {
-                LoadingContent()
-            }
-            
-            // 错误状态
-            uiState.hasError && !uiState.hasContent -> {
-                ErrorContent(
-                    message = uiState.error ?: "加载失败",
-                    onRetry = { onIntent(DiscoverIntent.Retry) }
-                )
-            }
-            
-            // 有内容
-            uiState.hasContent -> {
-                ContentList(
-                    uiState = uiState,
-                    onIntent = onIntent,
-                    onSeeAllClick = onSeeAllClick
-                )
-            }
-            
-            // 空状态
-            else -> {
-                EmptyContent()
+            )
+
+            // 主内容区域
+            when {
+                // 加载状态
+                uiState.isLoading && !uiState.hasContent -> {
+                    LoadingContent()
+                }
+
+                // 错误状态
+                uiState.hasError && !uiState.hasContent -> {
+                    ErrorContent(
+                        message = uiState.error ?: "加载失败",
+                        onRetry = { onIntent(DiscoverIntent.Retry) }
+                    )
+                }
+
+                // 有内容
+                uiState.hasContent -> {
+                    ContentList(
+                        uiState = uiState,
+                    appLanguage = appLanguage,
+                        onIntent = onIntent,
+                        onSeeAllClick = onSeeAllClick
+                    )
+                }
+
+                // 空状态
+                else -> {
+                    EmptyContent()
+                }
             }
         }
     }
@@ -210,6 +281,7 @@ private fun EmptyContent() {
 @Composable
 private fun ContentList(
     uiState: DiscoverUiState,
+    appLanguage: AppLanguage,
     onIntent: (DiscoverIntent) -> Unit,
     onSeeAllClick: (AnimeListType) -> Unit
 ) {
@@ -231,6 +303,7 @@ private fun ContentList(
             item {
                 TrendingAnimeRow(
                     animeList = uiState.trendingAnime,
+                    appLanguage = appLanguage,
                     onAnimeClick = { animeId ->
                         onIntent(DiscoverIntent.OnAnimeClick(animeId))
                     }
@@ -253,6 +326,7 @@ private fun ContentList(
             item {
                 TrendingAnimeRow(
                     animeList = uiState.currentSeasonAnime,
+                    appLanguage = appLanguage,
                     onAnimeClick = { animeId ->
                         onIntent(DiscoverIntent.OnAnimeClick(animeId))
                     }
@@ -275,6 +349,7 @@ private fun ContentList(
             item {
                 TrendingAnimeRow(
                     animeList = uiState.topAnime,
+                    appLanguage = appLanguage,
                     onAnimeClick = { animeId ->
                         onIntent(DiscoverIntent.OnAnimeClick(animeId))
                     }
@@ -317,6 +392,7 @@ private fun SectionHeader(
 @Composable
 private fun TrendingAnimeRow(
     animeList: List<AnimeItem>,
+    appLanguage: AppLanguage,
     onAnimeClick: (Int) -> Unit
 ) {
     LazyRow(
@@ -329,6 +405,7 @@ private fun TrendingAnimeRow(
         ) { anime ->
             AnimeCard(
                 anime = anime,
+                appLanguage = appLanguage,
                 onClick = { onAnimeClick(anime.id) }
             )
         }
@@ -341,8 +418,15 @@ private fun TrendingAnimeRow(
 @Composable
 private fun AnimeCard(
     anime: AnimeItem,
+    appLanguage: AppLanguage,
     onClick: () -> Unit
 ) {
+    val displayTitle = resolveTitle(
+        defaultTitle = anime.title,
+        titleEnglish = anime.titleEnglish,
+        titleJapanese = anime.titleJapanese,
+        language = appLanguage
+    )
     Card(
         onClick = onClick,
         modifier = Modifier.width(150.dp)
@@ -357,7 +441,7 @@ private fun AnimeCard(
             ) {
                 AsyncImage(
                     model = anime.imageUrl,
-                    contentDescription = anime.title,
+                    contentDescription = displayTitle,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                 )
@@ -384,7 +468,7 @@ private fun AnimeCard(
                 modifier = Modifier.padding(12.dp)
             ) {
                 Text(
-                    text = anime.title,
+                    text = displayTitle,
                     style = MaterialTheme.typography.bodyMedium,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis

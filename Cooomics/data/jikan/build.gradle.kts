@@ -10,7 +10,6 @@ kotlin {
     iosX64()
     iosSimulatorArm64()
     jvm("desktop")
-    js(IR) { browser() }
 
     sourceSets {
         val commonMain by getting {

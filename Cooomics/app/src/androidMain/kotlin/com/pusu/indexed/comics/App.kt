@@ -15,13 +15,6 @@ import okio.Path.Companion.toOkioPath
  */
 class App : Application(), SingletonImageLoader.Factory {
     
-    override fun onCreate() {
-        super.onCreate()
-        
-        // 保存全局引用
-        instance = this
-    }
-    
     /**
      * 创建和配置 Coil ImageLoader
      * 
@@ -50,11 +43,6 @@ class App : Application(), SingletonImageLoader.Factory {
                     .build()
             }
             .build()
-    }
-    
-    companion object {
-        lateinit var instance: App
-            private set
     }
 }
 

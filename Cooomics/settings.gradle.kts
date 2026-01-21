@@ -54,6 +54,8 @@ include(":domain:anime")
 include(":feature:discover")
 include(":feature:anime-detail")
 include(":feature:search")
+include(":feature:subscription")
+include(":feature:settings")
 
 // ============================================
 // Application Module
