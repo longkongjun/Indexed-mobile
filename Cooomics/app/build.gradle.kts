@@ -29,11 +29,6 @@ kotlin {
     
     jvm()
     
-    js {
-        browser()
-        binaries.executable()
-    }
-    
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
@@ -100,10 +95,6 @@ kotlin {
             implementation(libs.kotlinx.coroutinesSwing)
             // Ktor for JVM
             implementation(libs.ktor.client.okhttp)
-        }
-        jsMain.dependencies {
-            // Ktor for JS
-            implementation(libs.ktor.client.js)
         }
     }
 }

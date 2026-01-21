@@ -10,7 +10,6 @@ kotlin {
     iosX64()
     iosSimulatorArm64()
     jvm("desktop")
-    js(IR) { browser() }
 
     sourceSets {
         val commonMain by getting {
@@ -32,7 +31,6 @@ kotlin {
         val iosX64Main by getting { dependsOn(iosMain) }
         val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
 
-        val jsMain by getting { dependencies { implementation(libs.ktor.client.js) } }
     }
     jvmToolchain(11)
 }

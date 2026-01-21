@@ -11,7 +11,6 @@ kotlin {
     iosX64()
     iosSimulatorArm64()
     jvm("desktop")
-    js(IR) { browser() }
 
     sourceSets {
         val commonMain by getting {
@@ -29,9 +28,6 @@ kotlin {
         }
         val desktopMain by getting {
             dependencies { implementation(compose.desktop.currentOs) }
-        }
-        val jsMain by getting {
-            dependencies { implementation(compose.html.core) }
         }
     }
     jvmToolchain(11)
