@@ -7,6 +7,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
@@ -16,6 +18,8 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.pusu.indexed.comics.theme.AppTheme
 import com.pusu.indexed.comics.splash.SplashScreen
+import com.pusu.indexed.comics.settings.AppSettings
+import com.pusu.indexed.comics.settings.SettingsStore
 import com.pusu.indexed.core.locale.AppLanguage
 import com.pusu.indexed.core.theme.defaultThemePresets
 import com.pusu.indexed.shared.feature.animedetail.AnimeDetailScreen
@@ -37,6 +41,7 @@ import com.pusu.indexed.shared.feature.animedetail.animelist.presentation.AnimeL
 import com.pusu.indexed.shared.feature.discover.filter.FilterScreen
 import com.pusu.indexed.shared.feature.discover.filter.presentation.FilterViewModel
 import org.koin.compose.koinInject
+import kotlinx.coroutines.launch
 
 /**
  * 导航目标定义
@@ -99,10 +104,11 @@ private val savedStateConfig = SavedStateConfiguration {
 fun AppNavigation() {
     // 创建导航返回栈，从 Splash 页面开始，使用配置好的序列化模块
     val backStack = rememberNavBackStack(savedStateConfig, Screen.Splash)
-    var appLanguage by rememberSaveable { mutableStateOf(AppLanguage.Chinese) }
     val themePresets = remember { defaultThemePresets() }
-    var themePresetId by rememberSaveable { mutableStateOf(themePresets.first().id) }
-    val currentTheme = themePresets.firstOrNull { it.id == themePresetId } ?: themePresets.first()
+    val settingsStore: SettingsStore = koinInject<SettingsStore>()
+    val settings by settingsStore.settings.collectAsState(initial = AppSettings())
+    val currentTheme = themePresets.firstOrNull { it.id == settings.themePresetId } ?: themePresets.first()
+    val scope = rememberCoroutineScope()
 
     // 使用 NavDisplay 显示当前导航状态
     // 添加 ViewModel 装饰器，使每个 NavEntry 都有自己的 ViewModelStore
@@ -135,7 +141,7 @@ fun AppNavigation() {
 
                 DiscoverScreen(
                     viewModel = viewModel,
-                    appLanguage = appLanguage,
+                    appLanguage = settings.language,
                     onNavigateToDetail = { animeId ->
                         backStack.add(Screen.AnimeDetail(animeId))
                     },
@@ -164,7 +170,7 @@ fun AppNavigation() {
 
                 SearchScreen(
                     viewModel = viewModel,
-                    appLanguage = appLanguage,
+                    appLanguage = settings.language,
                     onNavigateBack = {
                         backStack.removeLastOrNull()
                     },
@@ -208,11 +214,15 @@ fun AppNavigation() {
             // 设置页
             entry<Screen.Settings> {
                 SettingsScreen(
-                    currentLanguage = appLanguage,
-                    onLanguageChange = { appLanguage = it },
+                    currentLanguage = settings.language,
+                    onLanguageChange = { language ->
+                        scope.launch { settingsStore.setLanguage(language) }
+                    },
                     themeOptions = themePresets,
-                    currentThemeId = themePresetId,
-                    onThemeChange = { themePresetId = it.id },
+                    currentThemeId = settings.themePresetId,
+                    onThemeChange = { preset ->
+                        scope.launch { settingsStore.setThemePresetId(preset.id) }
+                    },
                     onNavigateBack = {
                         backStack.removeLastOrNull()
                     }
@@ -227,7 +237,7 @@ fun AppNavigation() {
                 AnimeDetailScreen(
                     animeId = screen.animeId,
                     viewModel = viewModel,
-                    appLanguage = appLanguage,
+                    appLanguage = settings.language,
                     onNavigateBack = {
                         backStack.removeLastOrNull()
                     },
@@ -251,7 +261,7 @@ fun AppNavigation() {
 
                 AnimeListScreen(
                     viewModel = viewModel,
-                    appLanguage = appLanguage,
+                    appLanguage = settings.language,
                     onNavigateBack = {
                         backStack.removeLastOrNull()
                     },

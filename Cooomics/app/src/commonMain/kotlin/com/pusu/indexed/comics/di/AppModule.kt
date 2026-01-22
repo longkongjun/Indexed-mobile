@@ -18,13 +18,13 @@ import com.pusu.indexed.domain.anime.usecase.FilterAnimeUseCase
 import com.pusu.indexed.jikan.JikanApi
 import com.pusu.indexed.jikan.JikanClient
 import com.pusu.indexed.jikan.createJikanApi
-import com.pusu.indexed.shared.feature.animedetail.animelist.presentation.AnimeListType
 import com.pusu.indexed.shared.feature.animedetail.animelist.presentation.AnimeListViewModel
 import com.pusu.indexed.shared.feature.animedetail.presentation.AnimeDetailViewModel
 import com.pusu.indexed.shared.feature.discover.presentation.DiscoverViewModel
 import com.pusu.indexed.shared.feature.discover.filter.presentation.FilterViewModel
 import com.pusu.indexed.shared.feature.search.presentation.SearchViewModel
 import com.pusu.indexed.shared.feature.subscription.presentation.SubscriptionViewModel
+import com.pusu.indexed.comics.settings.SettingsStore
 import io.ktor.client.HttpClient
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -35,13 +35,14 @@ import org.koin.dsl.module
  * 
  * 定义所有依赖的创建方式
  */
-fun appModule(httpClient: HttpClient) = module {
+fun appModule(httpClient: HttpClient, settingsStore: SettingsStore) = module {
     
     // ========================================
     // Core 层：网络配置
     // ========================================
     
     single<HttpClient> { httpClient }
+    single<SettingsStore> { settingsStore }
     
     // ========================================
     // Data 层：API 和 Repository

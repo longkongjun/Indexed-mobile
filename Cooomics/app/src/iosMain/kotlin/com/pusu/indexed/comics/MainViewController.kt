@@ -6,6 +6,7 @@ import com.pusu.indexed.comics.di.appModule
 import com.pusu.indexed.comics.di.koinInstance
 import com.pusu.indexed.comics.navigation.AppNavigation
 import com.pusu.indexed.comics.platform.createHttpClient
+import com.pusu.indexed.comics.settings.IosSettingsStore
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.koin.core.context.startKoin
 
@@ -19,8 +20,9 @@ fun IOSApp() {
     
     // 初始化 Koin（只初始化一次）
     LaunchedEffect(httpClient) {
+        val settingsStore = IosSettingsStore()
         val koinApp = startKoin {
-            modules(appModule(httpClient))
+            modules(appModule(httpClient, settingsStore))
         }
         koinInstance = koinApp.koin
     }
