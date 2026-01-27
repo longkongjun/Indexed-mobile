@@ -7,13 +7,16 @@ root
 │  ├─ network/                   # 网络层（Ktor 客户端）
 │  └─ utils/                     # 纯 Kotlin 工具
 ├─ data/                         # 数据层（KMP）
-│  └─ jikan/                     # Jikan API 数据源实现
+│  ├─ jikan/                     # Jikan API 数据源实现
+│  └─ local/                     # 本地漫画数据源（文件扫描/解析）
 ├─ domain/                       # 业务逻辑层（KMP）
-│  └─ anime/                     # 动漫业务领域（合并 discover + feed）
+│  ├─ anime/                     # 动漫业务领域（合并 discover + feed）
+│  └─ comic/                     # 本地漫画领域（漫画/章节/页面）
 ├─ feature/                      # 功能模块层（KMP + Compose）
 │  ├─ discover/                  # 发现页功能（UI + ViewModel）
 │  ├─ anime-detail/              # 动漫详情功能（UI + ViewModel）
-│  └─ search/                    # 搜索功能（UI + ViewModel）
+│  ├─ search/                    # 搜索功能（UI + ViewModel）
+│  └─ local-library/             # 本地漫画库（UI + ViewModel）
 ├─ app/                          # 应用主模块（多平台）
 │  └─ src/
 │     ├─ commonMain/             # 共享代码（导航、DI 等）
@@ -26,20 +29,20 @@ root
 
 ### 分层职责
 - **core**：最基础能力；`network` 提供跨平台网络客户端（Ktor）；`utils` 纯 Kotlin 工具，无平台依赖。
-- **data**：数据源/仓库实现，当前 `jikan` 实现 Jikan API 数据访问，依赖 `core/network`。
-- **domain**：业务接口与用例（纯 Kotlin），定义业务逻辑接口，不依赖平台和 UI。`anime` 模块包含所有动漫相关的业务逻辑（列表、搜索、详情等）。
-- **feature**：功能模块（UI + ViewModel），使用 Compose Multiplatform 实现跨端 UI，依赖 `core`、`domain`、`data`。
+- **data**：数据源/仓库实现，`jikan` 访问在线数据；`local` 负责本地漫画文件扫描与解析（平台差异用 expect/actual）。
+- **domain**：业务接口与用例（纯 Kotlin），`anime` 处理在线动漫；`comic` 处理本地漫画（漫画/章节/页面）。
+- **feature**：功能模块（UI + ViewModel），`local-library` 提供本地漫画库与阅读入口。
 - **app**：应用主模块，负责导航组装、依赖注入、平台特定配置，依赖所有业务模块。
 
 ### 依赖方向（摘要）
 ```
 app
     ↓
-feature (discover, anime-detail, search)
+feature (discover, anime-detail, search, local-library)
     ↓
-domain (anime)
+domain (anime, comic)
     ↓
-data (jikan)
+data (jikan, local)
     ↓
 core (network, utils)
 ```
