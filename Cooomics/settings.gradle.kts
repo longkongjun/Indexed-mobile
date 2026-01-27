@@ -42,11 +42,13 @@ include(":core:network")
 // Data Modules (数据层)
 // ============================================
 include(":data:jikan")
+include(":data:local")
 
 // ============================================
 // Domain Modules (业务逻辑层)
 // ============================================
 include(":domain:anime")
+include(":domain:comic")
 
 // ============================================
 // Feature Modules (功能模块层)
