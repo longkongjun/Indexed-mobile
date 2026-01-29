@@ -2,116 +2,93 @@
 
 ## 整体架构概览
 
-```mermaid
-graph TB
-    subgraph "客户端层 Client Layer"
-        Android[Android App<br/>KMP + Compose]
-        iOS[iOS App<br/>KMP + Compose]
-        Desktop[Desktop App<br/>KMP + Compose]
-        Web[Web App<br/>KMP + Compose Web]
-        HarmonyOS[HarmonyOS App<br/>ArkTS + ArkUI]
-    end
-    
-    subgraph "共享核心 Shared Core"
-        KMPCore[KMP Core<br/>业务逻辑]
-        PluginEngine[插件引擎<br/>资源整理]
-        RuleEngine[规则引擎<br/>任务编排]
-    end
-    
-    subgraph "服务端层 Server Layer"
-        APIServer[API Server<br/>Kotlin + Rust]
-        WebAdmin[Web 后台管理<br/>React/Vue]
-        PluginServer[插件服务<br/>动态加载]
-        Storage[存储服务<br/>MinIO/S3]
-        Database[(数据库<br/>PostgreSQL)]
-    end
-    
-    subgraph "资源类型 Resources"
-        ComicPlugin[漫画插件]
-        VideoPlugin[影视插件]
-        MusicPlugin[音乐插件]
-        NovelPlugin[小说插件]
-    end
-    
-    Android --> KMPCore
-    iOS --> KMPCore
-    Desktop --> KMPCore
-    Web --> KMPCore
-    HarmonyOS -.参考.-> KMPCore
-    
-    KMPCore --> PluginEngine
-    PluginEngine --> RuleEngine
-    PluginEngine --> ComicPlugin
-    PluginEngine --> VideoPlugin
-    PluginEngine --> MusicPlugin
-    PluginEngine --> NovelPlugin
-    
-    KMPCore <--> APIServer
-    APIServer --> WebAdmin
-    APIServer --> PluginServer
-    APIServer --> Storage
-    APIServer --> Database
-    
-    PluginServer --> ComicPlugin
-    PluginServer --> VideoPlugin
-    PluginServer --> MusicPlugin
-    PluginServer --> NovelPlugin
-    
-    style KMPCore fill:#e1f5ff
-    style PluginEngine fill:#fff4e1
-    style APIServer fill:#e8f5e9
-    style WebAdmin fill:#f3e5f5
-```
-
----
-
-## 客户端架构
-
-### 分层架构
+系统模块结构图（按分层划分，层名在左，同层模块横向排列，层间纵向连接）：
 
 ```mermaid
 graph TB
-    subgraph "Presentation Layer 表现层"
-        UI[Compose UI]
-        ViewModel[ViewModel<br/>MVI Pattern]
+    subgraph Layer1["客户端平台层"]
+        direction LR
+        Android[Android]
+        iOS[iOS]
+        Desktop[Desktop]
+        Web[Web]
+        HarmonyOS[HarmonyOS]
     end
-    
-    subgraph "Domain Layer 领域层"
-        UseCase[Use Cases<br/>业务逻辑]
-        Model[Domain Models<br/>领域模型]
-        Repository[Repository Interfaces<br/>仓库接口]
+
+    subgraph Layer2["表现层 & 领域层"]
+        direction LR
+        subgraph Presentation["表现层"]
+            direction LR
+            UI[Compose UI]
+            ViewModel[ViewModel MVI]
+        end
+        subgraph Domain["领域层"]
+            direction LR
+            UseCase[Use Cases]
+            Model[Domain Models]
+            Repository[Repository]
+        end
     end
-    
-    subgraph "Data Layer 数据层"
-        LocalData[Local Data Source<br/>本地数据源]
-        RemoteData[Remote Data Source<br/>远程数据源]
-        Cache[Cache Layer<br/>缓存层]
+
+    subgraph Layer3["数据层 & 核心层"]
+        direction LR
+        subgraph Data["数据层"]
+            direction LR
+            LocalData[Local Data]
+            RemoteData[Remote Data]
+            Cache[Cache]
+        end
+        subgraph Core["核心层"]
+            direction LR
+            Network[Network]
+            Database[SQLDelight]
+            PluginEngine[Plugin Engine]
+            RuleEngine[Rule Engine]
+        end
     end
-    
-    subgraph "Core Layer 核心层"
-        Network[Network Client<br/>网络客户端]
-        Database[SQLDelight<br/>数据库]
-        PluginEngine[Plugin Engine<br/>插件引擎]
-        RuleEngine[Rule Engine<br/>规则引擎]
+
+    subgraph Layer4["服务端层"]
+        direction LR
+        APIServer[API Server]
+        WebAdmin[Web 后台]
+        PluginServer[插件服务]
+        Storage[存储]
+        PG[(PostgreSQL)]
     end
+
+    subgraph Layer5["资源类型 Plugin"]
+        direction LR
+        ComicPlugin[漫画]
+        VideoPlugin[影视]
+        MusicPlugin[音乐]
+        NovelPlugin[小说]
+    end
+
+    classDef layer1BG fill:#E3F2FD,stroke:#94A8C4,stroke-width:2px
+    classDef layer1Module fill:#BBDEFB,stroke:#94A8C4,stroke-width:1.5px
+    classDef layer2BG fill:#E8F5E9,stroke:#94A8C4,stroke-width:2px
+    classDef layer2Module fill:#C8E6C9,stroke:#94A8C4,stroke-width:1.5px
+    classDef layer3BG fill:#FFF3E0,stroke:#94A8C4,stroke-width:2px
+    classDef layer3Module fill:#FFE0B2,stroke:#94A8C4,stroke-width:1.5px
+    classDef layer4BG fill:#F3E5F5,stroke:#94A8C4,stroke-width:2px
+    classDef layer4Module fill:#E1BEE7,stroke:#94A8C4,stroke-width:1.5px
+    classDef layer5BG fill:#E0F7FA,stroke:#94A8C4,stroke-width:2px
+    classDef layer5Module fill:#B2EBF2,stroke:#94A8C4,stroke-width:1.5px
+
+    class Layer1 layer1BG
+    class Android,iOS,Desktop,Web,HarmonyOS layer1Module
     
-    UI --> ViewModel
-    ViewModel --> UseCase
-    UseCase --> Model
-    UseCase --> Repository
-    Repository --> LocalData
-    Repository --> RemoteData
-    Repository --> Cache
-    LocalData --> Database
-    RemoteData --> Network
-    Cache --> Database
-    UseCase --> PluginEngine
-    PluginEngine --> RuleEngine
+    class Layer2,Presentation,Domain layer2BG
+    class UI,ViewModel,UseCase,Model,Repository layer2Module
     
-    style UI fill:#e1f5ff
-    style UseCase fill:#fff4e1
-    style LocalData fill:#e8f5e9
-    style PluginEngine fill:#f3e5f5
+    class Layer3,Data,Core layer3BG
+    class LocalData,RemoteData,Cache,Network,Database,PluginEngine,RuleEngine layer3Module
+    
+    class Layer4 layer4BG
+    class APIServer,WebAdmin,PluginServer,Storage,PG layer4Module
+    
+    class Layer5 layer5BG
+    class ComicPlugin,VideoPlugin,MusicPlugin,NovelPlugin layer5Module
 ```
 
 ### 模块结构
