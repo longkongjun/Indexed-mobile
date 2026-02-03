@@ -33,6 +33,7 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.androidx.datastore.preferences)
             // Ktor for Android
             implementation(libs.ktor.client.okhttp)
             implementation(libs.ktor.client.content.negotiation)

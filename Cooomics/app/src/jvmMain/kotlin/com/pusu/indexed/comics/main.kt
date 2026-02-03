@@ -6,6 +6,7 @@ import androidx.compose.ui.window.application
 import com.pusu.indexed.comics.di.appModule
 import com.pusu.indexed.comics.navigation.AppNavigation
 import com.pusu.indexed.comics.platform.createHttpClient
+import com.pusu.indexed.comics.settings.JvmSettingsStore
 import org.koin.core.context.startKoin
 
 fun main() = application {
@@ -16,10 +17,12 @@ fun main() = application {
         // 使用平台特定的 HttpClient 工厂创建客户端
         val httpClient = remember { createHttpClient() }
 
+        val settingsStore = remember { JvmSettingsStore() }
+
         // 初始化 Koin
         remember {
             startKoin {
-                modules(appModule(httpClient))
+                modules(appModule(httpClient, settingsStore))
             }
         }
 

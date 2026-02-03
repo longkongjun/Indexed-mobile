@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import com.pusu.indexed.comics.di.appModule
 import com.pusu.indexed.comics.navigation.AppNavigation
 import com.pusu.indexed.comics.platform.createHttpClient
+import com.pusu.indexed.comics.settings.AndroidSettingsStore
 import org.koin.core.context.startKoin
 
 /**
@@ -19,9 +20,11 @@ class MainActivity : ComponentActivity() {
         // 使用平台特定的 HttpClient 工厂创建客户端
         val httpClient = createHttpClient()
 
+        val settingsStore = AndroidSettingsStore(applicationContext)
+
         // 初始化 Koin
         startKoin {
-            modules(appModule(httpClient))
+            modules(appModule(httpClient, settingsStore))
         }
 
         setContent {
