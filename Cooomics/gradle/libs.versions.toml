@@ -9,11 +9,11 @@ android-minSdk = "24"
 android-targetSdk = "36"
 
 # AndroidX 库
-androidx-activity = "1.12.2"
+androidx-activity = "1.12.3"
 androidx-appcompat = "1.7.1"
 androidx-core = "1.17.0"
 androidx-lifecycle = "2.9.6"
-androidx-datastore = "1.1.1"
+androidx-datastore = "1.2.0"
 
 # Compose
 composeHotReload = "1.0.0"
@@ -24,13 +24,13 @@ kotlin = "2.3.0"
 kotlinx-coroutines = "1.10.2"
 
 # 第三方库
-ktor = "3.3.3"
-kotlinx-serialization-json = "1.9.0"
+ktor = "3.4.0"
+kotlinx-serialization-json = "1.10.0"
 coil = "3.3.0"
 
 multiplatform-nav3-ui = "1.0.0-alpha06"
-compose-multiplatform-lifecycle = "2.10.0-alpha07"
-koin = "4.2.0-beta3"
+compose-multiplatform-lifecycle = "2.10.0-alpha08"
+koin = "4.2.0-RC1"
 
 # ==============================================================================
 # 库依赖
