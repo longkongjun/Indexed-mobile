@@ -1,4 +1,4 @@
-rootProject.name = "Cooomics"
+rootProject.name = "indexed-mobile"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {

@@ -9,7 +9,7 @@ android-minSdk = "24"
 android-targetSdk = "36"
 
 # AndroidX 库
-androidx-activity = "1.12.3"
+androidx-activity = "1.12.4"
 androidx-appcompat = "1.7.1"
 androidx-core = "1.17.0"
 androidx-lifecycle = "2.9.6"
@@ -17,10 +17,10 @@ androidx-datastore = "1.2.0"
 
 # Compose
 composeHotReload = "1.0.0"
-composeMultiplatform = "1.10.0"
+composeMultiplatform = "1.10.1"
 
 # Kotlin
-kotlin = "2.3.0"
+kotlin = "2.3.10"
 kotlinx-coroutines = "1.10.2"
 
 # 第三方库
